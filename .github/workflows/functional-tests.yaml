@@ -6,6 +6,8 @@ jobs:
   build:
     name: 'Run Functional Tests'
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_STEP_DEBUG: true
     steps:
       - name: Set up checkout target (repository_dispatch from /ok-to-test)
         if: github.event_name == 'repository_dispatch'
