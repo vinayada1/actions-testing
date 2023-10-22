@@ -1,0 +1,73 @@
+name: 'Functional tests'
+on:
+  repository_dispatch:
+    types: [functional-tests]
+jobs:
+  build:
+    name: 'Run Functional Tests'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up checkout target (repository_dispatch from /ok-to-test)
+        if: github.event_name == 'repository_dispatch'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_RAD_CI_BOT_PAT }}
+          script: |
+            const testPayload = context.payload.client_payload;
+            if (testPayload && testPayload.command === `ok-to-test`) {
+              var fs = require('fs');
+              // Set environment variables
+              fs.appendFileSync(process.env.GITHUB_ENV,
+                `CHECKOUT_REPO=${testPayload.pull_head_repo}\n`+
+                `CHECKOUT_REF=${testPayload.pull_head_ref}\n`+
+                `PR_NUMBER=${testPayload.issue.number}`
+              );
+            }
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.CHECKOUT_REPO }}
+          ref: ${{ env.CHECKOUT_REF }}
+      - uses: LouisBrunner/checks-action@v1.6.1
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: 'Functional Tests'
+          status: inprogress
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: success() && env.PR_NUMBER != ''
+        continue-on-error: true
+        with:
+          header: teststatus-${{ github.run_id }}
+          number: ${{ env.PR_NUMBER }}
+          append: true
+          message: |
+            :white_check_mark: Running for PR: ${{ env.PR_NUMBER }}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: success() && env.PR_NUMBER != ''
+        continue-on-error: true
+        with:
+          header: teststatus-${{ github.run_id }}
+          number: ${{ env.PR_NUMBER }}
+          append: true
+          message: |
+            :white_check_mark: Running for PR: ${{ env.PR_NUMBER }}
+      - uses: LouisBrunner/checks-action@v1.6.1
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: 'Functional Tests'
+          status: completed
+          conclusion: ${{ job.status }}
+          output: |
+            {"summary":"all tests passed, great job."}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: success() && env.PR_NUMBER != ''
+        continue-on-error: true
+        with:
+          header: teststatus-${{ github.run_id }}
+          number: ${{ env.PR_NUMBER }}
+          append: true
+          message: |
+            :white_check_mark: Running for PR: ${{ env.PR_NUMBER }}
+            :white_check_mark: Completed for PR: ${{ env.PR_NUMBER }}

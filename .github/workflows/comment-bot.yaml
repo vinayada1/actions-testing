@@ -1,0 +1,24 @@
+name: radius-bot
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  radius-bot:
+    name: Run Comment Bot script
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            .github/scripts/comment-bot.js
+          sparse-checkout-cone-mode: false
+      - name: Comment analyzer
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const script = require('./.github/scripts/comment-bot.js')
+            await script({github, context})
