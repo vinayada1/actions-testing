@@ -6,14 +6,19 @@ jobs:
   build:
     name: 'Run Functional Tests'
     runs-on: ubuntu-latest
-    env:
-      ACTIONS_STEP_DEBUG: true
+    env: 
+      FUNCTIONAL_TEST_APP_ID: 412087
     steps:
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with: 
+          app_id: ${{ env.FUNCTIONAL_TEST_APP_ID }}
+          private_key: ${{ secrets.FUNCTIONAL_TEST_APP_PRIVATE_KEY }}
       - name: Set up checkout target (repository_dispatch from /ok-to-test)
         if: github.event_name == 'repository_dispatch'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.get_installation_token.outputs.token }}
           script: |
             const testPayload = context.payload.client_payload;
             if (testPayload && testPayload.command === `ok-to-test`) {
@@ -33,7 +38,7 @@ jobs:
       - uses: LouisBrunner/checks-action@v1.6.1
         if: always()
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.get_installation_token.outputs.token }}
           name: 'Functional Tests'
           status: in_progress
           repo: ${{ env.CHECKOUT_REPO }}
@@ -51,6 +56,7 @@ jobs:
         if: success() && env.PR_NUMBER != ''
         continue-on-error: true
         with:
+          token: ${{ steps.get_installation_token.outputs.token }}
           header: teststatus-${{ github.run_id }}
           number: ${{ env.PR_NUMBER }}
           append: true
@@ -59,7 +65,7 @@ jobs:
       - uses: LouisBrunner/checks-action@v1.6.1
         if: always()
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.get_installation_token.outputs.token }}
           name: 'Functional Tests'
           repo: ${{ env.CHECKOUT_REPO }}
           sha: ${{ env.CHECKOUT_REF }}
@@ -71,6 +77,7 @@ jobs:
         if: success() && env.PR_NUMBER != ''
         continue-on-error: true
         with:
+          token: ${{ steps.get_installation_token.outputs.token }}
           header: teststatus-${{ github.run_id }}
           number: ${{ env.PR_NUMBER }}
           append: true
