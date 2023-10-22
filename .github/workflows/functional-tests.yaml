@@ -59,6 +59,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: 'Functional Tests'
+          repo: ${{ env.CHECKOUT_REPO }}
+          sha: ${{ env.CHECKOUT_REF }}
           status: completed
           conclusion: ${{ job.status }}
           output: |
