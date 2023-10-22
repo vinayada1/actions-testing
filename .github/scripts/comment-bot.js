@@ -1,7 +1,7 @@
 module.exports = async ({ github, context }) => {
     if (context.eventName === 'issue_comment' && context.payload.action === 'created') {
         try {
-            await handleIssueCommentCreate({ github, context });
+            await onComment({ github, context });
         } catch (error) {
             console.log("unexpected error: " + error);
         }
