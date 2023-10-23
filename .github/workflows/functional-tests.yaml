@@ -44,7 +44,7 @@ jobs:
           number: ${{ env.PR_NUMBER }}
           append: true
           message: |
-            :white_check_mark: Creating functional test check for PR: ${{ env.PR_NUMBER }}
+            :white_check_mark: Creating functional test check for PR: ${{ env.PR_NUMBER }} for ${{ github.sha }}
       - uses: LouisBrunner/checks-action@v1.6.1
         if: always()
         with:
