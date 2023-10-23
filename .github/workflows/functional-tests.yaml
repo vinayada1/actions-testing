@@ -51,7 +51,7 @@ jobs:
           token: ${{ steps.get_installation_token.outputs.token }}
           name: 'Functional Tests'
           status: in_progress
-          repo: ${{ env.CHECKOUT_REPO }}
+          repo: ${{ github.repository }}
           sha: ${{ env.CHECKOUT_REF }}
       - uses: marocchino/sticky-pull-request-comment@v2
         if: success() && env.PR_NUMBER != ''
@@ -68,7 +68,7 @@ jobs:
         with:
           token: ${{ steps.get_installation_token.outputs.token }}
           name: 'Functional Tests'
-          repo: ${{ env.CHECKOUT_REPO }}
+          repo: ${{ github.repository }}
           sha: ${{ env.CHECKOUT_REF }}
           status: completed
           conclusion: ${{ job.status }}
