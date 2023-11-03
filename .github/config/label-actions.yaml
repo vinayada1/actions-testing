@@ -79,9 +79,9 @@ duplicate:
   close: true
   close-reason: 'duplicate'
   comment:  |
-    Thanks for filing this issue.
+    Thanks for filing this issue. We're closing this as a duplicate of another issue. 
 
-    A project maintainer will review this and link the duplicate item and get back to you soon.
+    A project maintainer will review this and link the duplicate item and get back to you soon. If you have any questions or would like to discuss more, please reply to this issue and/or reach out on our [Discord server](https://aka.ms/radius/discord).
 
     _For more information on our triage process please visit our [triage overview](https://github.com/radius-project/radius/blob/main/docs/contributing/triage/triage-process.md)_
 
