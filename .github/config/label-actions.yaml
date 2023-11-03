@@ -77,7 +77,7 @@ wont-fix:
 
 duplicate:
   close: true
-  close-reason: 'duplicate'
+  close-reason: 'not planned'
   comment:  |
     Thanks for filing this issue. We're closing this as a duplicate of another issue. 
 
