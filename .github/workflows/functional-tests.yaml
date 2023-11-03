@@ -1,10 +1,10 @@
-name: 'Functional tests'
+name: 'Functional tests (ok to test)'
 on:
   repository_dispatch:
     types: [functional-tests]
 jobs:
   build:
-    name: 'Run Functional Tests'
+    name: 'Run Functional Tests (ok to test)'
     runs-on: ubuntu-latest
     env: 
       FUNCTIONAL_TEST_APP_ID: 412087
