@@ -1,4 +1,5 @@
 # Creation labels
+
 bug: 
   comment: |
     :wave: @{issue-author} Thanks for filing this bug report. 
@@ -27,9 +28,12 @@ maintenance:
   
     _For more information on our triage process please visit our [triage overview](https://github.com/radius-project/radius/blob/main/docs/contributing/triage/triage-process.md)_
 
+
+# Processing labels
+
 needs-more-information:
   comment: |
-    :wave: @{issue-author} Thanks for filing this issue. 
+    :wave: @{issue-author} we need more information. 
     
     To help us investigate further, we need additional information to reproduce or understand this issue. Please ensure you have steps to reproduce and information about your OS, rad CLI version, and runtime version.
     
