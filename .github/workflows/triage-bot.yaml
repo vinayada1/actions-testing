@@ -1,0 +1,24 @@
+name: 'Triage Bot'
+on:
+  issues:
+    types: [labeled, unlabeled]
+permissions:
+  contents: read
+  issues: write
+jobs:
+  build:
+    name: 'Process Triage Labels'
+    runs-on: ubuntu-latest
+    env: 
+      TRIAGE_BOT_APP_ID: 417724
+    steps:
+    - uses: tibdex/github-app-token@v1
+      id: get_installation_token
+      with: 
+        app_id: ${{ env.TRIAGE_BOT_APP_ID }}
+        private_key: ${{ secrets.TRIAGE_BOT_PRIVATE_KEY }}
+    - uses: dessant/label-actions@v3
+      with:
+        github-token: ${{ steps.get_installation_token.outputs.token }}
+        config-path: '.github/config/label-actions.yaml'
+        process-only: 'issues'

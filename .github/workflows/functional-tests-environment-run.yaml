@@ -1,0 +1,72 @@
+name: 'Functional test run (after approval)'
+on:
+  workflow_run:
+    workflows: ['Functional test approval (environment)']
+    types:
+      - completed
+jobs:
+  functional-tests:
+    name: 'Run Functional Tests (environment)'
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env: 
+      FUNCTIONAL_TEST_APP_ID: 412087
+    steps:
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with: 
+          app_id: ${{ env.FUNCTIONAL_TEST_APP_ID }}
+          private_key: ${{ secrets.FUNCTIONAL_TEST_APP_PRIVATE_KEY }}
+      - name: 'Download PR data artifacts'
+        uses: ./.github/actions/download-pr-data-artifact
+      - name: 'Unzip artifact'
+        run: unzip pr_number.zip
+      - name: 'Set PR context (workflow_run)'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            let fs = require('fs');
+            const payload = context.payload.workflow_run;
+            // Set environment variables
+            fs.appendFileSync(process.env.GITHUB_ENV,
+              `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
+              `CHECKOUT_REF=${payload.head_sha}\n` +
+              `PR_NUMBER=${fs.readFileSync('./pr_number')}\n`);
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.CHECKOUT_REPO }}
+          ref: ${{ env.CHECKOUT_REF }}
+      - uses: LouisBrunner/checks-action@v1.6.1
+        if: always()
+        with:
+          token: ${{ steps.get_installation_token.outputs.token }}
+          name: 'Functional test run (after approval)'
+          status: in_progress
+          repo: ${{ github.repository }}
+          sha: ${{ env.CHECKOUT_REF }}
+          details_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: success() && env.PR_NUMBER != ''
+        continue-on-error: true
+        with:
+          GITHUB_TOKEN: ${{ steps.get_installation_token.outputs.token }}
+          header: teststatus-${{ github.run_id }}
+          number: ${{ env.PR_NUMBER }}
+          append: true
+          message: |
+            :white_check_mark: Completed for PR: ${{ env.PR_NUMBER }}
+      - uses: LouisBrunner/checks-action@v1.6.1
+        if: always()
+        with:
+          token: ${{ steps.get_installation_token.outputs.token }}
+          name: 'Functional test run (after approval)'
+          repo: ${{ github.repository }}
+          sha: ${{ env.CHECKOUT_REF }}
+          status: completed
+          conclusion: ${{ job.status }}
+          output: |
+            {"summary":"all tests passed, great job. See links for more information.","title":"Functional test run (after approval)"}
+          details_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
