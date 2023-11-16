@@ -35,6 +35,10 @@ jobs:
               `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
               `CHECKOUT_REF=${payload.head_sha}\n` +
               `PR_NUMBER=${fs.readFileSync('./pr_number')}\n`);
+            echo $PR_NUMBER
+            echo $env.CHECKOUT_REF
+            echo $env.CHECKOUT_REPO
+
       - name: Check out code
         uses: actions/checkout@v3
         with:
