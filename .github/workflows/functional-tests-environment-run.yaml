@@ -38,11 +38,21 @@ jobs:
             });
             let fs = require('fs');
             fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/pr_number.zip`, Buffer.from(download.data));
+      - name: 'Unzip artifact'
+        run: unzip pr_number.zip
+      - name: 'Comment on PR'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            let fs = require('fs');
             const payload = context.payload.workflow_run;
             // Set environment variables
             fs.appendFileSync(process.env.GITHUB_ENV,
               `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
-              `CHECKOUT_REF=${payload.head_sha}\n`);
+              `CHECKOUT_REF=${payload.head_sha}\n` +
+              `PR_NUMBER=${fs.readFileSync('./pr_number')}\n`);
+            });
       - name: Check out code
         uses: actions/checkout@v3
         with:
