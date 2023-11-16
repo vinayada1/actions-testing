@@ -1,4 +1,4 @@
-name: 'Functional test run (environment)'
+name: 'Functional test run (after approval)'
 on:
   workflow_run:
     workflows: ['Functional test approval (environment)']
@@ -17,7 +17,7 @@ jobs:
         with: 
           app_id: ${{ env.FUNCTIONAL_TEST_APP_ID }}
           private_key: ${{ secrets.FUNCTIONAL_TEST_APP_PRIVATE_KEY }}
-      - name: 'Set PR Context'
+      - name: 'Download PR data artifacts'
         uses: actions/github-script@v6
         if: github.event_name == 'workflow_run'
         with:
@@ -40,7 +40,7 @@ jobs:
             fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/pr_number.zip`, Buffer.from(download.data));
       - name: 'Unzip artifact'
         run: unzip pr_number.zip
-      - name: 'Comment on PR'
+      - name: 'Set PR context (workflow_run)'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -52,7 +52,6 @@ jobs:
               `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
               `CHECKOUT_REF=${payload.head_sha}\n` +
               `PR_NUMBER=${fs.readFileSync('./pr_number')}\n`);
-            });
       - name: Check out code
         uses: actions/checkout@v3
         with:
