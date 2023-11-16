@@ -17,10 +17,10 @@ jobs:
         with: 
           app_id: ${{ env.FUNCTIONAL_TEST_APP_ID }}
           private_key: ${{ secrets.FUNCTIONAL_TEST_APP_PRIVATE_KEY }}
-      - run: Dump event data
+      - name: Dump event data
         env:
           DATA: ${{ toJson(github.event) }}
-          run: echo "$DATA"
+        run: echo "$DATA"
       # - name: Check out code
       #   uses: actions/checkout@v3
       # - uses: marocchino/sticky-pull-request-comment@v2
