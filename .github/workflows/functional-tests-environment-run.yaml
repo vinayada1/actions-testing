@@ -57,6 +57,15 @@ jobs:
         with:
           repository: ${{ env.CHECKOUT_REPO }}
           ref: ${{ env.CHECKOUT_REF }}
+      - uses: LouisBrunner/checks-action@v1.6.1
+        if: always()
+        with:
+          token: ${{ steps.get_installation_token.outputs.token }}
+          name: 'Functional test run (after approval)'
+          status: in_progress
+          repo: ${{ github.repository }}
+          sha: ${{ env.CHECKOUT_REF }}
+          details_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       - uses: marocchino/sticky-pull-request-comment@v2
         if: success() && env.PR_NUMBER != ''
         continue-on-error: true
@@ -67,4 +76,16 @@ jobs:
           append: true
           message: |
             :white_check_mark: Completed for PR: ${{ env.PR_NUMBER }}
+      - uses: LouisBrunner/checks-action@v1.6.1
+        if: always()
+        with:
+          token: ${{ steps.get_installation_token.outputs.token }}
+          name: 'Functional test run (after approval)'
+          repo: ${{ github.repository }}
+          sha: ${{ env.CHECKOUT_REF }}
+          status: completed
+          conclusion: ${{ job.status }}
+          output: |
+            {"summary":"all tests passed, great job. See links for more information.","title":"Functional test run (after approval)"}
+          details_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
