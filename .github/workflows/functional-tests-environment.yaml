@@ -30,24 +30,4 @@ jobs:
           number: ${{ env.PR_NUMBER }}
           append: true
           message: |
-            :white_check_mark: Creating functional test check for PR: ${{ env.PR_NUMBER }}
-      - uses: marocchino/sticky-pull-request-comment@v2
-        if: success() && env.PR_NUMBER != ''
-        continue-on-error: true
-        with:
-          GITHUB_TOKEN: ${{ steps.get_installation_token.outputs.token }}
-          header: teststatus-${{ github.run_id }}
-          number: ${{ env.PR_NUMBER }}
-          append: true
-          message: |
-            :white_check_mark: Running for PR: ${{ env.PR_NUMBER }}
-      - uses: marocchino/sticky-pull-request-comment@v2
-        if: success() && env.PR_NUMBER != ''
-        continue-on-error: true
-        with:
-          GITHUB_TOKEN: ${{ steps.get_installation_token.outputs.token }}
-          header: teststatus-${{ github.run_id }}
-          number: ${{ env.PR_NUMBER }}
-          append: true
-          message: |
             :white_check_mark: Completed for PR: ${{ env.PR_NUMBER }}

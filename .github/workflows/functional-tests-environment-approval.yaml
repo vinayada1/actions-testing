@@ -1,0 +1,17 @@
+name: 'Functional test approval (environment)'
+on:
+  pull_request:
+    branches:
+      - main
+      - features/*
+      - release/*
+jobs:
+  functional-tests:
+    name: 'Approve Functional Tests (environment)'
+    runs-on: ubuntu-latest
+    environment: functional-tests
+    steps:
+      - name: Say hi
+        run: |
+          echo "Hello, world!"
+
