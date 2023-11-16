@@ -17,20 +17,45 @@ jobs:
         with: 
           app_id: ${{ env.FUNCTIONAL_TEST_APP_ID }}
           private_key: ${{ secrets.FUNCTIONAL_TEST_APP_PRIVATE_KEY }}
-      - name: Dump event data
-        env:
-          DATA: ${{ toJson(github.event) }}
-        run: echo "$DATA"
-      # - name: Check out code
-      #   uses: actions/checkout@v3
-      # - uses: marocchino/sticky-pull-request-comment@v2
-      #   if: success() && env.PR_NUMBER != ''
-      #   continue-on-error: true
-      #   with:
-      #     GITHUB_TOKEN: ${{ steps.get_installation_token.outputs.token }}
-      #     header: teststatus-${{ github.run_id }}
-      #     number: ${{ env.PR_NUMBER }}
-      #     append: true
-      #     message: |
-      #       :white_check_mark: Completed for PR: ${{ env.PR_NUMBER }}
+      - name: 'Set PR Context'
+        uses: actions/github-script@v6
+        if: github.event_name == 'workflow_run'
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "pr_number"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/pr_number.zip`, Buffer.from(download.data));
+            const payload = context.payload.workflow_run;
+            // Set environment variables
+            fs.appendFileSync(process.env.GITHUB_ENV,
+              `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
+              `CHECKOUT_REF=${payload.head_sha}\n`);
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.CHECKOUT_REPO }}
+          ref: ${{ env.CHECKOUT_REF }}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: success() && env.PR_NUMBER != ''
+        continue-on-error: true
+        with:
+          GITHUB_TOKEN: ${{ steps.get_installation_token.outputs.token }}
+          header: teststatus-${{ github.run_id }}
+          number: ${{ env.PR_NUMBER }}
+          append: true
+          message: |
+            :white_check_mark: Completed for PR: ${{ env.PR_NUMBER }}
 

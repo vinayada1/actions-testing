@@ -11,7 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: functional-tests
     steps:
-      - name: Say hi
-        run: |
-          echo "Hello, world!"
+    - name: Save PR number
+      env:
+        PR_NUMBER: ${{ github.event.number }}
+      run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+    - uses: actions/upload-artifact@v3
+      with:
+        name: pr_number
+        path: pr/
 
