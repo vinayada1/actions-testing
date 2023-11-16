@@ -37,8 +37,8 @@ jobs:
               `PR_NUMBER=${fs.readFileSync('./pr_number')}\n`);
       - name: 'Echo env vars'
         run: |
-          echo $env.CHECKOUT_REF
-          echo $env.CHECKOUT_REPO
+          echo ${env.CHECKOUT_REF}
+          echo ${env.CHECKOUT_REPO}
       - name: Check out code
         uses: actions/checkout@v3
         with:
