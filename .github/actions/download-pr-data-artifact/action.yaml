@@ -27,7 +27,6 @@ runs:
       shell: bash
       run: unzip pr_number.zip
     - name: Set PR number
-      shell: bash
       uses: actions/github-script@v6
       with:
         script: |
