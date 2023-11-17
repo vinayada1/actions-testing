@@ -36,7 +36,7 @@ jobs:
             fs.appendFileSync(process.env.GITHUB_ENV,
               `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
               `CHECKOUT_REF=${payload.head_sha}\n` +
-              `PR_NUMBER=$${{ steps.get-pr-number.outputs.pr_number }}\n`);
+              `PR_NUMBER=${{ steps.get-pr-number.outputs.pr_number }}\n`);
       - name: 'Echo env vars'
         run: |
           echo ${{ env.CHECKOUT_REF }}
