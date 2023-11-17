@@ -27,6 +27,7 @@ runs:
       shell: bash
       run: unzip pr_number.zip
     - name: Set PR number
+      id: set-pr-number
       uses: actions/github-script@v6
       with:
         script: |
@@ -34,3 +35,7 @@ runs:
           PR_NUMBER=fs.readFileSync('./pr_number').toString();
           console.log(`Setting output: pr_number=${PR_NUMBER}`);
           core.setOutput('pr_number', PR_NUMBER);
+    - name: Use PR number
+      shell: bash
+      run: |
+        echo "PR number: ${{ steps.set-pr-number.outputs.pr_number }}"
