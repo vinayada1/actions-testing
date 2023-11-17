@@ -20,25 +20,24 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v3
       - name: 'Download PR data artifacts'
+        id: download-pr-data-artifact
         uses: ./.github/actions/download-pr-data-artifact
-      - name: 'Unzip artifact'
-        run: unzip pr_number.zip
       - name: 'Set PR context (workflow_run)'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            let fs = require('fs');
             const payload = context.payload.workflow_run;
             // Set environment variables
             fs.appendFileSync(process.env.GITHUB_ENV,
               `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
               `CHECKOUT_REF=${payload.head_sha}\n` +
-              `PR_NUMBER=${fs.readFileSync('./pr_number')}\n`);
+              `PR_NUMBER=${{ steps.download-pr-data-artifact.outputs.pr_number }}\n`);
       - name: 'Echo env vars'
         run: |
           echo ${{ env.CHECKOUT_REF }}
           echo ${{ env.CHECKOUT_REPO }}
+          echo ${{ env.PR_NUMBER }}
       - name: Check out code
         uses: actions/checkout@v3
         with:

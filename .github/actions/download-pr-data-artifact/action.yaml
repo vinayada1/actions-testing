@@ -1,11 +1,10 @@
-name: "Save PR number as artifact"
-description: "Save PR number as artifact"
+name: "Download PR number saved as an artifact"
+description: "This action can be used together with save-pr-as-artifact custom action which uploads the PR number as an artifact. This action downloads the artifact to retrieve the PR number."
 runs:
   using: "composite"
   steps:
-    - name: Save PR number
+    - name: Download artifact
       uses: actions/github-script@v6
-      if: github.event_name == 'workflow_run'
       with:
         script: |
           let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
@@ -24,4 +23,12 @@ runs:
           });
           let fs = require('fs');
           fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/pr_number.zip`, Buffer.from(download.data));
-
+    - name: 'Unzip artifact'
+      shell: bash
+      run: unzip pr_number.zip
+    - name: Set PR number
+      shell: bash
+      run: |
+          let fs = require('fs');
+          PR_NUMBER=${fs.readFileSync('./pr_number')}
+          echo "::set-output name=pr_number::$PR_NUMBER"
