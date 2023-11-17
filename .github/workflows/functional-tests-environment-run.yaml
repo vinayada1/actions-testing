@@ -20,8 +20,8 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v3
       - name: 'Download PR data artifacts'
-        id: download-pr-data-artifact
         uses: ./.github/actions/download-pr-data-artifact
+        id: download-pr-data-artifact
       - name: 'Set PR context (workflow_run)'
         uses: actions/github-script@v6
         with:

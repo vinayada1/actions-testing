@@ -32,6 +32,5 @@ runs:
         script: |
           let fs = require('fs');
           PR_NUMBER=fs.readFileSync('./pr_number').toString();
-          console.log(`PR number: ${PR_NUMBER}`);
           console.log(`Setting output: pr_number=${PR_NUMBER}`);
           core.setOutput('pr_number', PR_NUMBER);
