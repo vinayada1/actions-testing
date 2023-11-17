@@ -28,6 +28,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const payload = context.payload.workflow_run;
+            let fs = require('fs');
             // Set environment variables
             fs.appendFileSync(process.env.GITHUB_ENV,
               `CHECKOUT_REPO=${payload.head_repository.full_name}\n`+
