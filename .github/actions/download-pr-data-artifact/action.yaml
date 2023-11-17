@@ -1,8 +1,11 @@
 name: "Download PR number saved as an artifact"
-description: "This action can be used together with save-pr-as-artifact custom action which uploads the PR number as an artifact. This action downloads the artifact to retrieve the PR number."
+description: |
+  This action can be used together with save-pr-as-artifact custom action which uploads the PR number as an artifact.
+  This action downloads the artifact to retrieve the PR number.
 outputs:
-  pr_number:
-    description: Sets the PR number downloaded from the artifact
+  "pr_number":
+    value: ${{ steps.set-pr-number.outputs.pr_number }}
+    description: The PR number downloaded from the artifact
 runs:
   using: "composite"
   steps:
