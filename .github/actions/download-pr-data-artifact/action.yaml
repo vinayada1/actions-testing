@@ -31,5 +31,5 @@ runs:
       with:
         script: |
           let fs = require('fs');
-          PR_NUMBER=${fs.readFileSync('./pr_number')}
+          PR_NUMBER=`fs.readFileSync('./pr_number')`
           echo "::set-output name=pr_number::$PR_NUMBER"
